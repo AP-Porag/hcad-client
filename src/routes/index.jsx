@@ -10,7 +10,7 @@ import Navbar from "../components/Navbar";
 function AppRoutes() {
   return (
     <>
-    <Navbar/>
+    {/* <Navbar/> */}
     <Routes>
       {/* Auth Layout */}
       <Route path="/auth" element={<AuthLayout />}>
