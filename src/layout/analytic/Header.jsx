@@ -9,11 +9,11 @@ import {
   Menu,
   Text,
   rem,
-} from "@mantine/core";
-import { IconSearch, IconSettings, IconTrash } from "@tabler/icons-react";
-import { Link21, Notification } from "iconsax-react";
-import Profile from "../../assets/logos/avatar.jpg";
-import classes from "./css/Header.module.css";
+} from "@mantine/core"
+import { IconSearch, IconSettings, IconTrash } from "@tabler/icons-react"
+import { Link21, Notification } from "iconsax-react"
+import Profile from "../../assets/logos/avatar.jpg"
+import classes from "./css/Header.module.css"
 
 
 export default function Header({ opened, toggle }) {
@@ -32,7 +32,6 @@ export default function Header({ opened, toggle }) {
             Dashboard
           </Text>
         </Flex>
-
         <Flex h="100%" align="center" gap={12}>
           <Button
             visibleFrom="md"
@@ -44,9 +43,7 @@ export default function Header({ opened, toggle }) {
               Share Dashboard
             </Text>
           </Button>
-
           <Divider w={2} h="100%" orientation="vertical" />
-
           <ActionIcon radius="sm" pos="relative" variant="subtle" size={28}>
             <Notification className={classes.noti} variant="Bold" size={20} />
             <Box
@@ -88,11 +85,9 @@ export default function Header({ opened, toggle }) {
 
             <Menu.Dropdown>
               <Menu.Label>Application</Menu.Label>
-
               <Menu.Item
                 leftSection={
-                  <IconSettings style={{ width: rem(14), height: rem(14) }}
-                  />
+                  <IconSettings style={{ width: rem(14), height: rem(14) }} />
                 }
               >
                 Settings
@@ -100,8 +95,7 @@ export default function Header({ opened, toggle }) {
 
               <Menu.Item
                 leftSection={
-                  <IconSearch style={{ width: rem(14), height: rem(14) }}
-                  />
+                  <IconSearch style={{ width: rem(14), height: rem(14) }} />
                 }
                 rightSection={
                   <Text size="xs" c="dimmed">
@@ -119,8 +113,7 @@ export default function Header({ opened, toggle }) {
               <Menu.Item
                 color="red"
                 leftSection={
-                  <IconTrash style={{ width: rem(14), height: rem(14) }}
-                  />
+                  <IconTrash style={{ width: rem(14), height: rem(14) }} />
                 }
               >
                 Delete my account
@@ -130,5 +123,5 @@ export default function Header({ opened, toggle }) {
         </Flex>
       </Box>
     </Box>
-  );
+  )
 }
