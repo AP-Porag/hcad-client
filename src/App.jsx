@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import './App.css'
-
+import AppRoutes from './routes';
+import { TooltipProvider } from "@/components/ui/tooltip";
 function App() {
   return (
-    <>
-      <h2>hello world</h2>
-    </>
+    <TooltipProvider>
+      <AppRoutes/>
+    </TooltipProvider>
   );
 }
 
