@@ -1,4 +1,6 @@
+import PropertyPreviewSheet from "@/components/property/property-preview-sheet";
 import { useEffect, useMemo, useState } from "react";
+
 import {
     flexRender,
     getCoreRowModel,
@@ -39,6 +41,13 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 
+import {
+    formatCurrency,
+    formatNumber, formatPropertyAddress,
+} from "@/lib/format";
+
+import { PROPERTY_STATE_CLASS } from "@/constants/property-state-class";
+
 function Index() {
 
     /**
@@ -50,6 +59,9 @@ function Index() {
     const [properties, setProperties] = useState([]);
 
     const [loading, setLoading] = useState(false);
+
+    const [selectedProperty, setSelectedProperty] = useState(null);
+    const [openPreview, setOpenPreview] = useState(false);
 
     const [pagination, setPagination] = useState({
         next_cursor: null,
@@ -80,14 +92,58 @@ function Index() {
      */
 
     const fetchProperties = async (customCursor = null) => {
+
         try {
+
             setLoading(true);
 
+            // const params = {
+            //     ...filters,
+            //     ...sorting,
+            // };
+            //
+            // if (customCursor) {
+            //     params.cursor = customCursor;
+            // }
+
             const params = {
-                ...filters,
-                ...sorting,
+                limit: filters.limit,
             };
 
+            if (filters.keyword?.trim()) {
+                params.keyword = filters.keyword.trim();
+            }
+
+            if (filters.state_class?.trim()) {
+                params.state_class = filters.state_class.trim();
+            }
+
+            if (filters.neighborhood?.trim()) {
+                params.neighborhood = filters.neighborhood.trim();
+            }
+
+            if (filters.min_market_value) {
+                params.min_market_value = filters.min_market_value;
+            }
+
+            if (filters.max_market_value) {
+                params.max_market_value = filters.max_market_value;
+            }
+
+            /**
+             * SORTING
+             */
+            if (sorting.sort_by?.trim()) {
+                params.sort_by = sorting.sort_by;
+            }
+
+            if (sorting.sort_order?.trim()) {
+                params.sort_order = sorting.sort_order;
+            }
+
+            /**
+             * CURSOR
+             */
             if (customCursor) {
                 params.cursor = customCursor;
             }
@@ -103,6 +159,7 @@ function Index() {
             setPagination(response.pagination);
 
         } catch (error) {
+
             console.error(error);
 
             toast.error(
@@ -110,6 +167,7 @@ function Index() {
                 error?.message ||
                 "Failed to load properties"
             );
+
         } finally {
             setLoading(false);
         }
@@ -143,6 +201,7 @@ function Index() {
      */
 
     const handleNext = async () => {
+
         if (!pagination.next_cursor) return;
 
         setCursorHistory((prev) => [
@@ -150,7 +209,9 @@ function Index() {
             pagination.next_cursor,
         ]);
 
-        await fetchProperties(pagination.next_cursor);
+        await fetchProperties(
+            pagination.next_cursor
+        );
     };
 
     /**
@@ -160,6 +221,7 @@ function Index() {
      */
 
     const handlePrevious = async () => {
+
         if (cursorHistory.length <= 1) {
             setCursorHistory([]);
             return fetchProperties();
@@ -184,6 +246,7 @@ function Index() {
      */
 
     const handleSort = (field) => {
+
         let order = "desc";
 
         if (
@@ -203,28 +266,6 @@ function Index() {
 
     /**
      * =====================================
-     * FORMATTERS
-     * =====================================
-     */
-
-    const formatCurrency = (value) => {
-        if (!value) return "-";
-
-        return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            maximumFractionDigits: 0,
-        }).format(value);
-    };
-
-    const formatNumber = (value) => {
-        if (!value) return "-";
-
-        return new Intl.NumberFormat("en-US").format(value);
-    };
-
-    /**
-     * =====================================
      * TABLE COLUMNS
      * =====================================
      */
@@ -233,91 +274,258 @@ function Index() {
         () => [
             {
                 accessorKey: "property_address",
-                header: "Address",
-                cell: ({ row }) => (
-                    <div className="min-w-[250px]">
-                        <div className="font-medium text-sm">
-                            {row.original.property_address}
-                        </div>
 
-                        <div className="text-xs text-muted-foreground mt-1">
-                            {row.original.acct}
+                header: "Property",
+
+                // cell: ({ row }) => (
+                //
+                //     <div className="min-w-[320px]">
+                //
+                //         <div className="font-semibold text-sm leading-6 text-gray-900">
+                //             {formatPropertyAddress(row.original.property_address) || "-"}
+                //         </div>
+                //
+                //         <div className="text-xs text-muted-foreground mt-1">
+                //             Account:
+                //             {" "}
+                //             {row.original.acct || "-"}
+                //         </div>
+                //
+                //     </div>
+                // ),
+                cell: ({ row }) => {
+
+                    const formatted =
+                        formatPropertyAddress(
+                            row.original.property_address
+                        );
+
+                    return (
+
+                        <div className="">
+
+                            <div className="font-semibold text-sm leading-6">
+                                {formatted.street}
+                            </div>
+
+                            <div className="text-sm text-muted-foreground">
+                                {formatted.city}, TX {formatted.zip}
+                            </div>
+
+                            <div className="text-xs text-muted-foreground mt-2">
+                                Account:
+                                {" "}
+                                {row.original.acct}
+                            </div>
+
                         </div>
-                    </div>
-                ),
+                    );
+                }
             },
 
             {
                 accessorKey: "owner_name",
+
                 header: "Owner",
+
                 cell: ({ row }) => (
-                    <div className="min-w-[250px]">
-                        {row.original.owner_name}
+
+                    <div className="min-w-[260px]">
+
+                        <div className="font-medium text-sm leading-6">
+                            {row.original.owner_name || "-"}
+                        </div>
+
                     </div>
                 ),
             },
 
             {
                 accessorKey: "state_class",
+
                 header: "State Class",
+
                 cell: ({ row }) => (
-                    <Badge variant="outline">
-                        {row.original.state_class}
-                    </Badge>
-                ),
-            },
 
-            {
-                accessorKey: "building_area",
-                header: () => (
-                    <button
-                        onClick={() => handleSort("building_area")}
-                        className="font-semibold"
-                    >
-                        Building Area
-                    </button>
-                ),
-                cell: ({ row }) =>
-                    formatNumber(row.original.building_area),
-            },
+                    <div className="min-w-[220px]">
 
-            {
-                accessorKey: "land_area",
-                header: "Land Area",
-                cell: ({ row }) =>
-                    formatNumber(row.original.land_area),
-            },
+                        <div className="font-medium text-sm">
+                            {
+                                PROPERTY_STATE_CLASS[
+                                    row.original.state_class
+                                    ] || row.original.state_class
+                            }
+                        </div>
 
-            {
-                accessorKey: "market_value",
-                header: () => (
-                    <button
-                        onClick={() => handleSort("market_value")}
-                        className="font-semibold"
-                    >
-                        Market Value
-                    </button>
-                ),
-                cell: ({ row }) => (
-                    <div className="font-semibold">
-                        {formatCurrency(row.original.market_value)}
+                        <div className="text-xs text-muted-foreground mt-1">
+                            [{row.original.state_class || "-"}]
+                        </div>
+
                     </div>
                 ),
             },
 
             {
-                accessorKey: "filters.neighborhood",
-                header: "Neighborhood",
-                cell: ({ row }) =>
-                    row.original.filters?.neighborhood || "-",
+                accessorKey: "building_area",
+
+                header: () => (
+                    <button
+                        onClick={() =>
+                            handleSort("building_area")
+                        }
+                        className="font-semibold"
+                    >
+                        Building Area
+                    </button>
+                ),
+
+                cell: ({ row }) => (
+
+                    <div className="min-w-[160px]">
+
+                        <div className="font-medium">
+                            {
+                                row.original.building_area
+                                    ? `${formatNumber(
+                                        row.original.building_area
+                                    )} SqFt`
+                                    : "-"
+                            }
+                        </div>
+
+                    </div>
+                ),
             },
 
             {
-                accessorKey: "filters.market_area",
-                header: "Market Area",
-                cell: ({ row }) =>
-                    row.original.filters?.market_area || "-",
+                accessorKey: "land_area",
+
+                header: "Land Area",
+
+                cell: ({ row }) => (
+
+                    <div className="min-w-[160px]">
+
+                        <div className="font-medium">
+                            {
+                                row.original.land_area
+                                    ? `${formatNumber(
+                                        row.original.land_area
+                                    )} SqFt`
+                                    : "-"
+                            }
+                        </div>
+
+                    </div>
+                ),
             },
+
+            {
+                accessorKey: "market_value",
+
+                header: () => (
+                    <button
+                        onClick={() =>
+                            handleSort("market_value")
+                        }
+                        className="font-semibold"
+                    >
+                        Market Value
+                    </button>
+                ),
+
+                cell: ({ row }) => {
+                    const value = Number(
+                        row.original.market_value || 0
+                    );
+
+                    return (
+
+                        <div className="min-w-[180px]">
+                            {
+                                value > 0
+                                    ? (
+                                        <div className="font-semibold text-sm text-emerald-700">
+                                            {formatCurrency(value)}
+                                        </div>
+                                    )
+                                    : (
+                                        <span className="text-muted-foreground">
+                                -
+                            </span>
+                                    )
+                            }
+
+                        </div>
+                    );
+                },
+            },
+
+            // {
+            //     accessorKey: "filters.neighborhood",
+            //
+            //     header: "Neighborhood",
+            //
+            //     cell: ({ row }) => (
+            //
+            //         <div className="min-w-[180px]">
+            //
+            //             {
+            //                 row.original.filters?.neighborhood
+            //                     ? (
+            //                         <Badge
+            //                             variant="secondary"
+            //                             className="rounded-md"
+            //                         >
+            //                             {
+            //                                 row.original.filters
+            //                                     ?.neighborhood
+            //                             }
+            //                         </Badge>
+            //                     )
+            //                     : (
+            //                         <span className="text-muted-foreground text-sm">
+            //                 -
+            //             </span>
+            //                     )
+            //             }
+            //
+            //         </div>
+            //     ),
+            // },
+            //
+            // {
+            //     accessorKey: "filters.market_area",
+            //
+            //     header: "Market Area",
+            //
+            //     cell: ({ row }) => (
+            //
+            //         <div className="min-w-[180px]">
+            //
+            //             {
+            //                 row.original.filters?.market_area
+            //                     ? (
+            //                         <Badge
+            //                             variant="outline"
+            //                             className="rounded-md"
+            //                         >
+            //                             {
+            //                                 row.original.filters
+            //                                     ?.market_area
+            //                             }
+            //                         </Badge>
+            //                     )
+            //                     : (
+            //                         <span className="text-muted-foreground text-sm">
+            //                 -
+            //             </span>
+            //                     )
+            //             }
+            //
+            //         </div>
+            //     ),
+            // },
         ],
         [sorting]
     );
@@ -335,16 +543,18 @@ function Index() {
     });
 
     return (
-        <div className="p-6 space-y-6">
+
+        <div className="p-4 md:p-6 space-y-6">
 
             {/* =====================================
-          FILTERS
-      ===================================== */}
+            FILTERS
+            ===================================== */}
 
             <Card className="rounded-2xl border shadow-sm">
+
                 <CardContent className="p-5">
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
 
                         <Input
                             placeholder="Search address / owner"
@@ -386,7 +596,8 @@ function Index() {
                             onChange={(e) =>
                                 setFilters({
                                     ...filters,
-                                    min_market_value: e.target.value,
+                                    min_market_value:
+                                    e.target.value,
                                 })
                             }
                         />
@@ -398,7 +609,8 @@ function Index() {
                             onChange={(e) =>
                                 setFilters({
                                     ...filters,
-                                    max_market_value: e.target.value,
+                                    max_market_value:
+                                    e.target.value,
                                 })
                             }
                         />
@@ -406,108 +618,134 @@ function Index() {
                         <Button onClick={applyFilters}>
                             Apply Filters
                         </Button>
+
                     </div>
 
                 </CardContent>
+
             </Card>
 
             {/* =====================================
-          TABLE
-      ===================================== */}
+            TABLE
+            ===================================== */}
 
-            <Card className="rounded-2xl border shadow-sm overflow-hidden">
-                <CardContent className="p-0 overflow-auto">
+            <Card className="rounded-2xl border shadow-sm overflow-hidden max-w-295">
 
-                    <Table>
+                <CardContent className="p-0">
 
-                        <TableHeader className="bg-muted/50">
+                    <div className="w-full overflow-x-auto">
 
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id}>
+                        <Table className="min-w-[1550px]">
 
-                                    {headerGroup.headers.map((header) => (
-                                        <TableHead
-                                            key={header.id}
-                                            className="whitespace-nowrap"
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                        </TableHead>
-                                    ))}
+                            <TableHeader className="bg-muted/50">
 
-                                </TableRow>
-                            ))}
+                                {table.getHeaderGroups().map((headerGroup) => (
 
-                        </TableHeader>
+                                    <TableRow key={headerGroup.id}>
 
-                        <TableBody>
+                                        {headerGroup.headers.map((header) => (
 
-                            {table.getRowModel().rows.length ? (
-                                table.getRowModel().rows.map((row) => (
-
-                                    <TableRow
-                                        key={row.id}
-                                        className="hover:bg-muted/40 transition"
-                                    >
-
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell
-                                                key={cell.id}
-                                                className="py-4"
+                                            <TableHead
+                                                key={header.id}
+                                                className="whitespace-nowrap text-xs uppercase tracking-wide font-semibold"
                                             >
                                                 {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
                                                 )}
-                                            </TableCell>
+                                            </TableHead>
+
                                         ))}
 
                                     </TableRow>
 
-                                ))
-                            ) : (
-                                <TableRow>
+                                ))}
 
-                                    <TableCell
-                                        colSpan={columns.length}
-                                        className="h-32 text-center text-muted-foreground"
-                                    >
-                                        No properties found
-                                    </TableCell>
+                            </TableHeader>
 
-                                </TableRow>
-                            )}
+                            <TableBody>
 
-                        </TableBody>
+                                {table.getRowModel().rows.length ? (
 
-                    </Table>
+                                    table.getRowModel().rows.map((row) => (
+
+                                        <TableRow
+                                            key={row.id}
+                                            className="cursor-pointer transition-all duration-200 hover:bg-muted/50"
+                                            onClick={() => {
+                                                setSelectedProperty(row.original);
+                                                setOpenPreview(true);
+                                            }}
+                                        >
+
+                                            {row.getVisibleCells().map((cell) => (
+
+                                                <TableCell
+                                                    key={cell.id}
+                                                    className="py-5 align-top"
+                                                >
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </TableCell>
+
+                                            ))}
+
+                                        </TableRow>
+
+                                    ))
+
+                                ) : (
+
+                                    <TableRow>
+
+                                        <TableCell
+                                            colSpan={columns.length}
+                                            className="h-32 text-center text-muted-foreground"
+                                        >
+                                            No properties found
+                                        </TableCell>
+
+                                    </TableRow>
+
+                                )}
+
+                            </TableBody>
+
+                        </Table>
+
+                    </div>
 
                 </CardContent>
+
             </Card>
 
             {/* =====================================
-          PAGINATION
-      ===================================== */}
+            PAGINATION
+            ===================================== */}
 
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
 
                 <div className="flex items-center gap-2">
 
-          <span className="text-sm text-muted-foreground">
-            Rows per page
-          </span>
+                    <span className="text-sm text-muted-foreground">
+                        Rows per page
+                    </span>
 
                     <Select
                         value={String(filters.limit)}
                         onValueChange={(value) => {
-                            setFilters({
+
+                            const updatedFilters = {
                                 ...filters,
                                 limit: Number(value),
-                            });
+                            };
+
+                            setFilters(updatedFilters);
 
                             fetchProperties();
+
                         }}
                     >
 
@@ -547,8 +785,8 @@ function Index() {
             </div>
 
             {/* =====================================
-          LOADING MODAL
-      ===================================== */}
+            LOADING MODAL
+            ===================================== */}
 
             <Dialog open={loading}>
 
@@ -569,6 +807,12 @@ function Index() {
                 </DialogContent>
 
             </Dialog>
+
+            <PropertyPreviewSheet
+                open={openPreview}
+                onOpenChange={setOpenPreview}
+                property={selectedProperty}
+            />
 
         </div>
     );
