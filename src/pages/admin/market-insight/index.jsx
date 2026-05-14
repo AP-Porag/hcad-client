@@ -64,6 +64,7 @@ import {
 } from "@/components/ui/select";
 
 import {
+    formatCompactCurrency,
     formatCurrency,
     formatNumber,
 } from "@/lib/format";
@@ -73,6 +74,9 @@ import {
 } from "@/constants/property-state-class";
 
 import { API_BASE_URL } from "@/config/api";
+
+import CountUpModule from "react-countup";
+const CountUp = CountUpModule.default || CountUpModule;
 
 export default function MarketInsight() {
 
@@ -99,6 +103,8 @@ export default function MarketInsight() {
             const response = await axios.get(
                 `${API_BASE_URL}/market-insight`
             );
+
+            console.log(response.data)
 
             setData(response.data || {});
 
@@ -271,8 +277,18 @@ export default function MarketInsight() {
                                     Total Market Value
                                 </p>
 
+                                {/*<h2 className="mt-3 text-4xl font-black">*/}
+                                {/*    {formatCurrency(summary.totalMarketValue)}*/}
+                                {/*</h2>*/}
                                 <h2 className="mt-3 text-4xl font-black">
-                                    {formatCurrency(summary.totalMarketValue)}
+                                    <CountUp
+                                        end={
+                                            summary.totalMarketValue || 0
+                                        }
+                                        formattingFn={(value) =>
+                                            formatCompactCurrency(value)
+                                        }
+                                    />
                                 </h2>
 
                             </div>
@@ -284,7 +300,14 @@ export default function MarketInsight() {
                                 </p>
 
                                 <h2 className="mt-3 text-4xl font-black">
-                                    {formatCurrency(summary.avgPropertyValue)}
+                                    <CountUp
+                                        end={
+                                            summary.avgPropertyValue || 0
+                                        }
+                                        formattingFn={(value) =>
+                                            formatCompactCurrency(value)
+                                        }
+                                    />
                                 </h2>
 
                             </div>
@@ -320,7 +343,7 @@ export default function MarketInsight() {
 
                         <InsightCard
                             icon={<Layers3 className="h-5 w-5" />}
-                            title="Active Market Areas"
+                            title="Top Market Segments"
                             value={`${data.marketAreaAnalytics?.length || 0} Areas`}
                             gradient="from-purple-600 to-fuchsia-600"
                         />
@@ -686,7 +709,14 @@ export default function MarketInsight() {
                                     </div>
 
                                     <h3 className="mt-6 text-3xl font-black">
-                                        {formatCurrency(item.intensity)}
+                                        <CountUp
+                                            end={
+                                                item.intensity || 0
+                                            }
+                                            formattingFn={(value) =>
+                                                formatCompactCurrency(value)
+                                            }
+                                        />
                                     </h3>
 
                                     <p className="mt-1 text-sm text-white/70">
@@ -714,7 +744,14 @@ export default function MarketInsight() {
                                             </p>
 
                                             <p className="text-lg font-black">
-                                                {formatCurrency(item.avgMarketValue)}
+                                                <CountUp
+                                                    end={
+                                                        item.avgMarketValue || 0
+                                                    }
+                                                    formattingFn={(value) =>
+                                                        formatCompactCurrency(value)
+                                                    }
+                                                />
                                             </p>
 
                                         </div>

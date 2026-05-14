@@ -626,7 +626,7 @@ function Index() {
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
 
                         <Input
-                            placeholder="Search address / owner"
+                            placeholder="Address / Owner / Account"
                             value={filters.keyword}
                             onChange={(e) =>
                                 setFilters({
@@ -658,31 +658,31 @@ function Index() {
                             }
                         />
 
-                        <Input
-                            type="number"
-                            placeholder="Min Value"
-                            value={filters.min_market_value}
-                            onChange={(e) =>
-                                setFilters({
-                                    ...filters,
-                                    min_market_value:
-                                    e.target.value,
-                                })
-                            }
-                        />
+                        {/*<Input*/}
+                        {/*    type="number"*/}
+                        {/*    placeholder="Min Value"*/}
+                        {/*    value={filters.min_market_value}*/}
+                        {/*    onChange={(e) =>*/}
+                        {/*        setFilters({*/}
+                        {/*            ...filters,*/}
+                        {/*            min_market_value:*/}
+                        {/*            e.target.value,*/}
+                        {/*        })*/}
+                        {/*    }*/}
+                        {/*/>*/}
 
-                        <Input
-                            type="number"
-                            placeholder="Max Value"
-                            value={filters.max_market_value}
-                            onChange={(e) =>
-                                setFilters({
-                                    ...filters,
-                                    max_market_value:
-                                    e.target.value,
-                                })
-                            }
-                        />
+                        {/*<Input*/}
+                        {/*    type="number"*/}
+                        {/*    placeholder="Max Value"*/}
+                        {/*    value={filters.max_market_value}*/}
+                        {/*    onChange={(e) =>*/}
+                        {/*        setFilters({*/}
+                        {/*            ...filters,*/}
+                        {/*            max_market_value:*/}
+                        {/*            e.target.value,*/}
+                        {/*        })*/}
+                        {/*    }*/}
+                        {/*/>*/}
 
                         <Button onClick={applyFilters}>
                             Apply Filters

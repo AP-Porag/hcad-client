@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/lib/axios.js";
 import {API_BASE_URL} from "@/config/api.js";
 
 const API_URL = `${API_BASE_URL}/users`;

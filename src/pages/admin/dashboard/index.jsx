@@ -53,6 +53,7 @@ import {
 } from "@/components/ui/table";
 
 import {
+    formatCompactCurrency, formatCompactNumber,
     formatCurrency,
     formatNumber,
 } from "@/lib/format";
@@ -93,7 +94,6 @@ export default function Index() {
             );
 
             setDashboard(response.data);
-            console.log(response.data)
         } catch (error) {
 
             console.error(error);
@@ -169,7 +169,7 @@ export default function Index() {
 
                     <HeroStat
                         title="Average Market Value"
-                        value={formatCurrency(
+                        value={formatCompactCurrency(
                             overview.avgMarketValue || 0
                         )}
                         icon={<TrendingUp className="h-5 w-5" />}
@@ -177,7 +177,7 @@ export default function Index() {
 
                     <HeroStat
                         title="Total Market Value"
-                        value={formatCurrency(
+                        value={formatCompactCurrency(
                             overview.totalMarketValue || 0
                         )}
                         icon={<DollarSign className="h-5 w-5" />}
@@ -568,17 +568,17 @@ export default function Index() {
                                         <div className="flex items-center justify-between">
 
                                             <Badge className="bg-slate-900 text-white">
-                                                District {item._id}
+                                                District: {item.districtName}
                                             </Badge>
 
                                             <p className="text-sm font-semibold text-slate-500">
-                                                {formatNumber(item.propertyCount)} Properties
+                                                {formatCompactNumber(item.propertyCount)} Properties
                                             </p>
 
                                         </div>
 
                                         <h3 className="mt-4 text-2xl font-black text-slate-900">
-                                            {formatCurrency(item.totalTaxableValue)}
+                                            {formatCompactCurrency(item.totalTaxableValue)}
                                         </h3>
 
                                     </div>
@@ -782,10 +782,18 @@ function KpiCard({
 
                                 {prefix}
 
+                                {/*<CountUp*/}
+                                {/*    end={value || 0}*/}
+                                {/*    duration={2}*/}
+                                {/*    separator=","*/}
+                                {/*/>*/}
                                 <CountUp
-                                    end={value || 0}
-                                    duration={2}
-                                    separator=","
+                                    end={
+                                        value || 0
+                                    }
+                                    formattingFn={(value) =>
+                                        formatCompactNumber(value)
+                                    }
                                 />
 
                                 {suffix}
