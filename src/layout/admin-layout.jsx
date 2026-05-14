@@ -67,6 +67,9 @@ function AdminLayout() {
 
                   {pathnames.map((name, index) => {
 
+                    const breadcrumbOverride =
+                        location.state?.breadcrumb;
+
                     const routeTo = `/${pathnames
                         .slice(0, index + 1)
                         .join("/")}`;
@@ -83,8 +86,14 @@ function AdminLayout() {
                           <BreadcrumbItem>
 
                             {isLast ? (
+                                // <BreadcrumbPage>
+                                //   {formatLabel(name)}
+                                // </BreadcrumbPage>
                                 <BreadcrumbPage>
-                                  {formatLabel(name)}
+                                  {isLast &&
+                                  breadcrumbOverride
+                                      ? breadcrumbOverride
+                                      : formatLabel(name)}
                                 </BreadcrumbPage>
                             ) : (
                                 <BreadcrumbLink asChild>

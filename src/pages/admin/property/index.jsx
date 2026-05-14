@@ -38,6 +38,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { BookmarkCheck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 
@@ -47,6 +48,7 @@ import {
 } from "@/lib/format";
 
 import { PROPERTY_STATE_CLASS } from "@/constants/property-state-class";
+import {getSavedProperties, getSavedPropertyAccts} from "@/services/saved-property.service.js";
 
 function Index() {
 
@@ -84,6 +86,60 @@ function Index() {
         sort_by: "market_value",
         sort_order: "desc",
     });
+
+    const [savedPropertyAccts, setSavedPropertyAccts] =
+        useState(new Set());
+
+    const fetchSavedPropertyAccts =
+        async () => {
+            try {
+                const response =
+                    await getSavedPropertyAccts();
+
+                setSavedPropertyAccts(
+                    new Set(response.data)
+                );
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+    useEffect(() => {
+        fetchSavedPropertyAccts();
+    }, []);
+
+    const [savedProperties, setSavedProperties] =
+        useState([]);
+
+    const fetchSavedProperties =
+        async () => {
+            try {
+                setLoading(true);
+
+                const response =
+                    await getSavedProperties();
+
+                setSavedProperties(
+                    response.data || []
+                );
+            } catch (error) {
+                toast.error(
+                    "Failed to fetch saved properties"
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
+
+    useEffect(() => {
+        fetchSavedProperties();
+    }, []);
+    // const allProperties =
+    //     savedProperties
+    //         .map(
+    //             (item) => item.property
+    //         )
+    //         .filter(Boolean);
 
     /**
      * =====================================
@@ -303,6 +359,19 @@ function Index() {
                     return (
 
                         <div className="">
+                            <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+
+                                {savedPropertyAccts.has(
+                                    row.original.acct
+                                ) && (
+                                    <div className="flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-green-700">
+                                        <BookmarkCheck className="h-3.5 w-3.5" />
+
+                                        <span>Saved</span>
+                                    </div>
+                                )}
+
+                            </div>
 
                             <div className="font-semibold text-sm leading-6">
                                 {formatted.street}
@@ -527,7 +596,7 @@ function Index() {
             //     ),
             // },
         ],
-        [sorting]
+        [sorting,savedPropertyAccts]
     );
 
     /**
@@ -812,6 +881,30 @@ function Index() {
                 open={openPreview}
                 onOpenChange={setOpenPreview}
                 property={selectedProperty}
+                onPropertySaved={(acct) => {
+                    setSavedPropertyAccts(
+                        (prev) =>
+                            new Set([
+                                ...prev,
+                                acct,
+                            ])
+                    );
+                    setOpenPreview(false);
+                }}
+                onPropertyRemoved={(acct) => {
+
+                    setSavedPropertyAccts(
+                        (prev) =>
+                            new Set(
+                                [...prev].filter(
+                                    (item) =>
+                                        item !== acct
+                                )
+                            )
+                    );
+                    setOpenPreview(false);
+
+                }}
             />
 
         </div>

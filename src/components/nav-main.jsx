@@ -99,7 +99,7 @@ export function NavMain({
                         hover:text-primary
                         ${
                                 active
-                                    ? "bg-primary text-primary-foreground hover:bg-primary"
+                                    ? "bg-primary/15 text-primary hover:bg-primary/15"
                                     : ""
                             }
                       `}
@@ -145,7 +145,7 @@ export function NavMain({
                                 hover:text-primary
                                 ${
                                           subActive
-                                              ? "bg-primary/15 text-primary font-medium"
+                                              ? "bg-primary/15 text-primary"
                                               : ""
                                       }
                               `}
@@ -195,7 +195,7 @@ export function NavMain({
                   hover:text-primary
                   ${
                           active
-                              ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                              ? "bg-primary/15 text-primary hover:bg-primary/15"
                               : ""
                       }
                 `}

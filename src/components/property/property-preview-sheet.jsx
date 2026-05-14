@@ -17,6 +17,21 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { useEffect, useState } from "react";
+
+import {
+    Bookmark,
+    BookmarkCheck,
+} from "lucide-react";
+
+import { toast } from "sonner";
+
+import {
+    saveProperty,
+    removeSavedProperty,
+    checkSavedProperty,
+} from "@/services/saved-property.service";
+
 const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -33,7 +48,89 @@ export default function PropertyPreviewSheet({
                                                  open,
                                                  onOpenChange,
                                                  property,
+                                                 onPropertySaved,
+                                                 onPropertyRemoved,
                                              }) {
+
+    const [isSaved, setIsSaved] =
+        useState(false);
+
+    const [saveLoading, setSaveLoading] =
+        useState(false);
+
+    const checkPropertySaved =
+        async () => {
+            try {
+                const response =
+                    await checkSavedProperty(
+                        property.acct
+                    );
+
+                setIsSaved(
+                    response.data.is_saved
+                );
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+    useEffect(() => {
+        if (!property?.acct) return;
+
+        checkPropertySaved();
+    }, [property?.acct]);
+
+
+    const handleSaveToggle =
+        async () => {
+            try {
+                setSaveLoading(true);
+
+                if (isSaved) {
+                    await removeSavedProperty(
+                        property.acct
+                    );
+
+                    setIsSaved(false);
+
+                    if (onPropertyRemoved) {
+                        onPropertyRemoved(
+                            property.acct
+                        );
+                    }
+
+                    toast.success(
+                        "Property removed from saved"
+                    );
+                }
+                else {
+                    await saveProperty(
+                        property.acct
+                    );
+
+                    setIsSaved(true);
+
+                    if (onPropertySaved) {
+                        onPropertySaved(
+                            property.acct
+                        );
+                    }
+
+                    toast.success(
+                        "Property saved successfully"
+                    );
+                }
+            } catch (error) {
+                toast.error(
+                    error?.response?.data
+                        ?.message ||
+                    "Something went wrong"
+                );
+            } finally {
+                setSaveLoading(false);
+            }
+        };
+
     if (!property) return null;
 
     return (
@@ -251,6 +348,12 @@ export default function PropertyPreviewSheet({
                             >
                                 <Link
                                     to={`/admin/property/${property._id}`}
+                                    state={{
+                                        breadcrumb:
+                                            property.property_address
+                                                ?.split(",")[0]
+                                                ?.trim(),
+                                    }}
                                     className="flex"
                                 >
                                     <span>View Full Details</span>
@@ -259,12 +362,32 @@ export default function PropertyPreviewSheet({
                                 </Link>
                             </Button>
 
+                            {/*<Button*/}
+                            {/*    size="lg"*/}
+                            {/*    className="flex-1 bg-amber-500 hover:bg-amber-600 text-white cursor-pointer"*/}
+                            {/*>*/}
+                            {/*    Save Property*/}
+                            {/*    <SaveIcon className="h-4 w-4 ml-1" />*/}
+                            {/*</Button>*/}
                             <Button
                                 size="lg"
-                                className="flex-1 bg-amber-500 hover:bg-amber-600 text-white cursor-pointer"
+                                disabled={saveLoading}
+                                onClick={handleSaveToggle}
+                                className={`flex-1 text-white cursor-pointer ${
+                                    isSaved
+                                        ? "bg-red-500 hover:bg-red-600"
+                                        : "bg-amber-500 hover:bg-amber-600"
+                                }`}
                             >
-                                Save Property
-                                <SaveIcon className="h-4 w-4 ml-1" />
+                                {isSaved
+                                    ? "Remove From Saved"
+                                    : "Save Property"}
+
+                                {isSaved ? (
+                                    <BookmarkCheck className="ml-1 h-4 w-4" />
+                                ) : (
+                                    <Bookmark className="ml-1 h-4 w-4" />
+                                )}
                             </Button>
 
                             {/*<Button*/}

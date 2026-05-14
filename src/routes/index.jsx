@@ -14,6 +14,10 @@ import MarketInsight from "@/pages/admin/market-insight/index.jsx";
 import PropertyIndex from "@/pages/admin/property";
 import PropertyDetail from "@/pages/admin/property/detail.jsx";
 import Login from "@/pages/auth/login.jsx";
+import UserIndexPage from "@/pages/admin/user/index.jsx";
+import ProtectedRoute from "@/components/ProtectedRoute.jsx";
+import GuestRoute from "@/components/GuestRoute.jsx";
+import SavedPropertiesPage from "@/pages/admin/saved-properties/index.jsx";
 
 function AppRoutes() {
   return (
@@ -26,7 +30,11 @@ function AppRoutes() {
             AUTH LAYOUT
         ===================================== */}
 
-          <Route path="/" element={<AuthLayout />}>
+          <Route path="/" element={
+              <GuestRoute>
+                <AuthLayout />
+              </GuestRoute>
+          }>
              <Route path="" element={<Login />} />
           </Route>
 
@@ -34,12 +42,21 @@ function AppRoutes() {
             ADMIN LAYOUT
         ===================================== */}
 
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route path="/admin" element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+          }>
 
             {/* DASHBOARD */}
             <Route
                 index
                 element={<Dashboard />}
+            />
+
+            <Route
+                path="users"
+                element={<UserIndexPage />}
             />
 
             {/* PROPERTY LIST */}
@@ -59,7 +76,11 @@ function AppRoutes() {
                 path="search"
                 element={<Search />}
             />
-
+              {/* Saved Properties */}
+              <Route
+                  path="saved-properties"
+                  element={<SavedPropertiesPage />}
+              />
             {/* MARKET INSIGHT */}
             <Route
                 path="market-insight"

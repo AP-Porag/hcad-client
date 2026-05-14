@@ -6,6 +6,7 @@ import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
+import {getUser} from "@/lib/auth.js";
 
 import {
   Sidebar,
@@ -22,16 +23,17 @@ import {
   LineChart,
   Settings,
   Database,
-  Users,
+  Users, BookmarkCheck,
 } from "lucide-react";
 
 // This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
+  // user: {
+  //   name: "shadcn",
+  //   email: "m@example.com",
+  //   avatar: "/avatars/shadcn.jpg",
+  // },
+  user: getUser(),
 
   teams: [
     // {
@@ -71,15 +73,15 @@ const data = {
       isActive: false,
 
       items: [
-        {
-          title: "Import & Sync",
-          url: "#",
-          icon: <Database />,
-        },
+        // {
+        //   title: "Import & Sync",
+        //   url: "#",
+        //   icon: <Database />,
+        // },
 
         {
           title: "User",
-          url: "#",
+          url: "/admin/users",
           icon: <Users />,
         },
       ],
@@ -96,7 +98,11 @@ const data = {
       url: "/admin/search",
       icon: <Search />,
     },
-
+    {
+      title: "Saved Properties",
+      url: "/admin/saved-properties",
+      icon: <BookmarkCheck />,
+    },
     {
       title: "Market Insight",
       url: "/admin/market-insight",

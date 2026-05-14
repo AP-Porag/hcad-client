@@ -744,10 +744,42 @@ export default function Detail() {
                     >
                         <div className="h-[500px]">
                             <ResponsiveContainer width="100%" height="100%">
+                                {/*<BarChart*/}
+                                {/*    data={*/}
+                                {/*        data?.charts*/}
+                                {/*            ?.featureDistribution*/}
+                                {/*    }*/}
+                                {/*>*/}
                                 <BarChart
                                     data={
-                                        data?.charts
-                                            ?.featureDistribution
+                                        Object.entries(
+                                            (
+                                                data?.charts?.featureDistribution || []
+                                            ).reduce((acc, item) => {
+
+                                                const name =
+                                                    item.name ||
+                                                    item.cd ||
+                                                    item.type ||
+                                                    "Unknown";
+
+                                                const value = Number(
+                                                    item.value ||
+                                                    item.units ||
+                                                    item.uts ||
+                                                    item.count ||
+                                                    0
+                                                );
+
+                                                acc[name] = (acc[name] || 0) + value;
+
+                                                return acc;
+
+                                            }, {})
+                                        ).map(([name, value]) => ({
+                                            name,
+                                            value,
+                                        }))
                                     }
                                 >
                                     <CartesianGrid

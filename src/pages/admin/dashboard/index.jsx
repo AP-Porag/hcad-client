@@ -89,11 +89,11 @@ export default function Index() {
             setLoading(true);
 
             const response = await axios.get(
-                `${API_BASE_URL}/properties/dashboard`
+                `${API_BASE_URL}/dashboard`
             );
 
             setDashboard(response.data);
-
+            console.log(response.data)
         } catch (error) {
 
             console.error(error);
@@ -157,80 +157,61 @@ export default function Index() {
 
             <div className="overflow-hidden rounded-[32px] bg-gradient-to-br from-[#020617] via-[#071133] to-[#0f172a] p-8 text-white shadow-2xl">
 
-                <div className="flex flex-col gap-8 xl:flex-row xl:items-center xl:justify-between">
+                <div className="grid gap-6 xl:grid-cols-4">
 
-                    <div className="max-w-4xl">
+                    <HeroStat
+                        title="Total Properties"
+                        value={formatNumber(
+                            overview.totalProperties || 0
+                        )}
+                        icon={<Building2 className="h-5 w-5" />}
+                    />
 
-                        <div className="flex flex-wrap gap-3">
+                    <HeroStat
+                        title="Average Market Value"
+                        value={formatCurrency(
+                            overview.avgMarketValue || 0
+                        )}
+                        icon={<TrendingUp className="h-5 w-5" />}
+                    />
 
-                            <Badge className="bg-blue-600 hover:bg-blue-600">
-                                Executive Dashboard
-                            </Badge>
+                    <HeroStat
+                        title="Total Market Value"
+                        value={formatCurrency(
+                            overview.totalMarketValue || 0
+                        )}
+                        icon={<DollarSign className="h-5 w-5" />}
+                    />
 
-                            <Badge className="bg-emerald-600 hover:bg-emerald-600">
-                                Live HCAD Intelligence
-                            </Badge>
-
-                            <Badge className="bg-purple-600 hover:bg-purple-600">
-                                Enterprise Analytics
-                            </Badge>
-
-                        </div>
-
-                        <h1 className="mt-6 text-5xl font-black tracking-tight">
-                            Property Intelligence Dashboard
-                        </h1>
-
-                        <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-300">
-                            Executive-level overview of Houston property
-                            intelligence including valuation metrics,
-                            land analytics, ownership insights,
-                            tax exposure, and market segmentation.
-                        </p>
-
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-2">
-
-                        <HeroStat
-                            title="Total Properties"
-                            value={formatNumber(
-                                overview.totalProperties || 0
-                            )}
-                            icon={<Building2 className="h-5 w-5" />}
-                        />
-
-                        <HeroStat
-                            title="Average Value"
-                            value={formatCurrency(
-                                overview.avgMarketValue || 0
-                            )}
-                            icon={<TrendingUp className="h-5 w-5" />}
-                        />
-
-                    </div>
+                    <HeroStat
+                        title="Market Segments"
+                        value={stateClassData.length}
+                        icon={<PieChartIcon className="h-5 w-5" />}
+                    />
 
                 </div>
 
             </div>
 
+            {/* HERO */}
+
             {/* KPI GRID */}
 
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
 
-                <KpiCard
-                    title="Total Properties"
-                    value={overview.totalProperties}
-                    icon={<Building2 className="h-6 w-6" />}
-                    prefix=""
-                />
+                {/*<KpiCard*/}
+                {/*    title="Total Properties"*/}
+                {/*    value={overview.totalProperties}*/}
+                {/*    icon={<Building2 className="h-6 w-6" />}*/}
+                {/*    prefix=""*/}
+                {/*/>*/}
 
-                <KpiCard
-                    title="Total Market Value"
-                    value={overview.totalMarketValue}
-                    icon={<DollarSign className="h-6 w-6" />}
-                    prefix="$"
-                />
+                {/*<KpiCard*/}
+                {/*    title="Total Market Value"*/}
+                {/*    value={overview.totalMarketValue}*/}
+                {/*    icon={<DollarSign className="h-6 w-6" />}*/}
+                {/*    prefix="$"*/}
+                {/*/>*/}
 
                 <KpiCard
                     title="Total Land Area"
