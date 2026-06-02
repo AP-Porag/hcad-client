@@ -80,6 +80,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import PropertyPreviewSheet from "@/components/property/property-preview-sheet.jsx";
 
 export default function Index() {
 
@@ -90,6 +91,9 @@ export default function Index() {
     const [selectedProperty, setSelectedProperty] = useState(null);
 
     const [sheetOpen, setSheetOpen] = useState(false);
+
+    const [savedPropertyAccts, setSavedPropertyAccts] =
+        useState(new Set());
 
     const [pagination, setPagination] = useState({
         next_cursor: null,
@@ -179,7 +183,6 @@ export default function Index() {
 
         }
     };
-
     const resetFilters = () => {
 
         setFilters({
@@ -319,6 +322,7 @@ export default function Index() {
     });
 
     return (
+
 
         <div className="space-y-6">
 
@@ -681,65 +685,96 @@ export default function Index() {
 
             {/* SHEET */}
 
-            <Sheet
+            {/*<Sheet*/}
+            {/*    open={sheetOpen}*/}
+            {/*    onOpenChange={setSheetOpen}*/}
+            {/*>*/}
+
+            {/*    <SheetContent className="overflow-y-auto sm:max-w-2xl">*/}
+
+            {/*        {*/}
+            {/*            selectedProperty && (*/}
+
+            {/*                <div className="space-y-6">*/}
+
+            {/*                    <SheetHeader>*/}
+
+            {/*                        <SheetTitle className="text-2xl font-black">*/}
+            {/*                            {selectedProperty.property_address}*/}
+            {/*                        </SheetTitle>*/}
+
+            {/*                    </SheetHeader>*/}
+
+            {/*                    <QuickStatCard*/}
+            {/*                        title="Market Value"*/}
+            {/*                        value={formatCurrency(selectedProperty.market_value || 0)}*/}
+            {/*                        icon={<DollarSign className="h-5 w-5" />}*/}
+            {/*                    />*/}
+
+            {/*                    <QuickStatCard*/}
+            {/*                        title="Building Area"*/}
+            {/*                        value={`${formatNumber(selectedProperty.building_area || 0)} SqFt`}*/}
+            {/*                        icon={<Building2 className="h-5 w-5" />}*/}
+            {/*                    />*/}
+
+            {/*                    <QuickStatCard*/}
+            {/*                        title="Land Area"*/}
+            {/*                        value={`${formatNumber(selectedProperty.land_area || 0)} SqFt`}*/}
+            {/*                        icon={<MapPin className="h-5 w-5" />}*/}
+            {/*                    />*/}
+
+            {/*                    <Button*/}
+            {/*                        asChild*/}
+            {/*                        className="w-full"*/}
+            {/*                    >*/}
+
+            {/*                        <Link*/}
+            {/*                            to={`/admin/property/${selectedProperty._id}`}*/}
+            {/*                        >*/}
+            {/*                            View Full Details*/}
+            {/*                        </Link>*/}
+
+            {/*                    </Button>*/}
+
+            {/*                </div>*/}
+
+            {/*            )*/}
+            {/*        }*/}
+
+            {/*    </SheetContent>*/}
+
+            {/*</Sheet>*/}
+
+
+            <PropertyPreviewSheet
                 open={sheetOpen}
                 onOpenChange={setSheetOpen}
-            >
+                property={selectedProperty}
+                onPropertySaved={(acct) => {
+                    setSavedPropertyAccts(
+                        (prev) =>
+                            new Set([
+                                ...prev,
+                                acct,
+                            ])
+                    );
+                    setSheetOpen(false);
+                }}
+                onPropertyRemoved={(acct) => {
 
-                <SheetContent className="overflow-y-auto sm:max-w-2xl">
+                    setSavedPropertyAccts(
+                        (prev) =>
+                            new Set(
+                                [...prev].filter(
+                                    (item) =>
+                                        item !== acct
+                                )
+                            )
+                    );
+                    setSheetOpen(false);
 
-                    {
-                        selectedProperty && (
-
-                            <div className="space-y-6">
-
-                                <SheetHeader>
-
-                                    <SheetTitle className="text-2xl font-black">
-                                        {selectedProperty.property_address}
-                                    </SheetTitle>
-
-                                </SheetHeader>
-
-                                <QuickStatCard
-                                    title="Market Value"
-                                    value={formatCurrency(selectedProperty.market_value || 0)}
-                                    icon={<DollarSign className="h-5 w-5" />}
-                                />
-
-                                <QuickStatCard
-                                    title="Building Area"
-                                    value={`${formatNumber(selectedProperty.building_area || 0)} SqFt`}
-                                    icon={<Building2 className="h-5 w-5" />}
-                                />
-
-                                <QuickStatCard
-                                    title="Land Area"
-                                    value={`${formatNumber(selectedProperty.land_area || 0)} SqFt`}
-                                    icon={<MapPin className="h-5 w-5" />}
-                                />
-
-                                <Button
-                                    asChild
-                                    className="w-full"
-                                >
-
-                                    <Link
-                                        to={`/admin/property/${selectedProperty._id}`}
-                                    >
-                                        View Full Details
-                                    </Link>
-
-                                </Button>
-
-                            </div>
-
-                        )
-                    }
-
-                </SheetContent>
-
-            </Sheet>
+                }}
+            />
 
         </div>
     );

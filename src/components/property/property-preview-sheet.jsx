@@ -4,6 +4,7 @@ import {
 } from "@/components/ui/sheet";
 
 import { Button } from "@/components/ui/button";
+import { getOccupancyStatus } from "@/lib/property";
 
 import {
     Building2,
@@ -31,6 +32,7 @@ import {
     removeSavedProperty,
     checkSavedProperty,
 } from "@/services/saved-property.service";
+import {Badge} from "@/components/ui/badge.jsx";
 
 const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-US", {
@@ -44,6 +46,7 @@ const formatNumber = (value) => {
     return new Intl.NumberFormat("en-US").format(value || 0);
 };
 
+
 export default function PropertyPreviewSheet({
                                                  open,
                                                  onOpenChange,
@@ -51,6 +54,13 @@ export default function PropertyPreviewSheet({
                                                  onPropertySaved,
                                                  onPropertyRemoved,
                                              }) {
+
+    console.log(property)
+    const occupancy =
+        getOccupancyStatus(
+            property?.property_address,
+            property?.mailing_address
+        );
 
     const [isSaved, setIsSaved] =
         useState(false);
@@ -153,6 +163,20 @@ export default function PropertyPreviewSheet({
 
                                 <span className="font-medium text-foreground">
                                     {property.acct}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <span>Occupancy:</span>
+                                <span className="font-medium text-foreground">
+                                    <Badge
+                                        className={
+                                            occupancy === "Occupied"
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-amber-100 text-amber-700"
+                                        }
+                                    >
+    {occupancy}
+</Badge>
                                 </span>
                             </div>
                         </div>

@@ -623,10 +623,12 @@ function Index() {
 
                 <CardContent className="p-5">
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
+                    {/*<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">*/}
+                    <div className="flex flex-col md:flex-row gap-4 justify-between">
 
                         <Input
-                            placeholder="Address / Owner / Account"
+                            className="w-full md:w-auto"
+                            placeholder="Search..."
                             value={filters.keyword}
                             onChange={(e) =>
                                 setFilters({
@@ -636,27 +638,27 @@ function Index() {
                             }
                         />
 
-                        <Input
-                            placeholder="State Class"
-                            value={filters.state_class}
-                            onChange={(e) =>
-                                setFilters({
-                                    ...filters,
-                                    state_class: e.target.value,
-                                })
-                            }
-                        />
+                        {/*<Input*/}
+                        {/*    placeholder="State Class"*/}
+                        {/*    value={filters.state_class}*/}
+                        {/*    onChange={(e) =>*/}
+                        {/*        setFilters({*/}
+                        {/*            ...filters,*/}
+                        {/*            state_class: e.target.value,*/}
+                        {/*        })*/}
+                        {/*    }*/}
+                        {/*/>*/}
 
-                        <Input
-                            placeholder="Neighborhood"
-                            value={filters.neighborhood}
-                            onChange={(e) =>
-                                setFilters({
-                                    ...filters,
-                                    neighborhood: e.target.value,
-                                })
-                            }
-                        />
+                        {/*<Input*/}
+                        {/*    placeholder="Neighborhood"*/}
+                        {/*    value={filters.neighborhood}*/}
+                        {/*    onChange={(e) =>*/}
+                        {/*        setFilters({*/}
+                        {/*            ...filters,*/}
+                        {/*            neighborhood: e.target.value,*/}
+                        {/*        })*/}
+                        {/*    }*/}
+                        {/*/>*/}
 
                         {/*<Input*/}
                         {/*    type="number"*/}

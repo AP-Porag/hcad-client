@@ -49,12 +49,14 @@ import {
 import { API_BASE_URL } from "@/config/api";
 
 import {
+    formatCompactCurrency,
     formatCurrency,
     formatNumber,
     formatPropertyAddress,
 } from "@/lib/format";
 
 import { PROPERTY_STATE_CLASS } from "@/constants/property-state-class";
+import {getOccupancyStatus} from "@/lib/property.js";
 
 const CHART_COLORS = [
     "#0f172a",
@@ -292,6 +294,12 @@ export default function Detail() {
         return formatPropertyAddress(data?.header?.address);
     }, [data]);
 
+    console.log(data)
+    const occupancy =
+        getOccupancyStatus(
+            data?.header?.address,
+            data?.header?.mailingAddress
+        );
     const tabs = [
         "Ownership",
         "Land",
@@ -346,6 +354,10 @@ export default function Detail() {
 
                                 <Badge color="violet">
                                     Account #{data?.header?.account}
+                                </Badge>
+
+                                <Badge color={occupancy === "Occupied" ? "emerald" : "amber"}>
+                                    Occupancy :{occupancy}
                                 </Badge>
                             </div>
 
@@ -600,7 +612,7 @@ export default function Detail() {
                                 </div>
 
                                 <div className="mt-2 text-2xl font-black">
-                                    {formatCurrency(
+                                    {formatCompactCurrency(
                                         data?.valuation?.landValue,
                                     )}
                                 </div>
@@ -612,7 +624,7 @@ export default function Detail() {
                                 </div>
 
                                 <div className="mt-2 text-2xl font-black">
-                                    {formatCurrency(
+                                    {formatCompactCurrency(
                                         data?.valuation
                                             ?.buildingValue,
                                     )}
@@ -625,7 +637,7 @@ export default function Detail() {
                                 </div>
 
                                 <div className="mt-2 text-2xl font-black">
-                                    {formatCurrency(
+                                    {formatCompactCurrency(
                                         data?.valuation
                                             ?.assessedValue,
                                     )}
