@@ -80,7 +80,7 @@ export function LoginForm({
           "Login successful"
       );
 
-      navigate("/admin");
+      navigate("/admin", { replace: true });
     } catch (error) {
       toast.error(
           error?.response?.data
